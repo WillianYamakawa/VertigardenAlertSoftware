@@ -29,15 +29,15 @@ public class AuthController : ControllerBase{
         _context = context;
     }
 
-    [HttpPost("api/auth/register")]
+    [HttpPost("register")]
     public ActionResult PostRegister([FromBody] AuthRequest body)
     {
         if(string.IsNullOrWhiteSpace(body.Login) || string.IsNullOrWhiteSpace(body.Password)) return BadRequest("Login and Password must not be empty");
-        User user = new User(body.Login, Hasher.CalculateSHA256Hash(body.Password));
+        User user = new User(body.Login, Hasher.CalculateSHA256Hash(body.Password), isAdmin: body.isAdmin);
         return user.Save(_context) ? Ok() : StatusCode(StatusCodes.Status500InternalServerError);
     }
 
-    [HttpPost("api/auth/login")]
+    [HttpPost("login")]
     public ActionResult PostLogin([FromBody] AuthRequest body){
         string? login = body.Login;
         string? password = body.Password;

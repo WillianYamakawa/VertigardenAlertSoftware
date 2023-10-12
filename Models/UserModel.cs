@@ -54,7 +54,7 @@ public class User{
         return context.ExecuteNonQuery(query, new("@Login", Login), new("@Password", Password), new ("@Token", Token), new("@IsAdmin", IsAdmin ? 1 : 0 ));
     }
 
-    public User(string login, string password, string? token, bool isAdmin = false){
+    public User(string login, string password, string? token = null, bool isAdmin = false){
         this.Login = login;
         this.Password = password;
         this.Token = token;
