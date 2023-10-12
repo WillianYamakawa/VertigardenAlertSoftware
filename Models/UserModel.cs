@@ -36,8 +36,8 @@ public class User{
             ID = (int)result[0],
             Login = login,
             Password = password,
-            Token = result.GetString(1, null),
-            IsAdmin = Convert.ToBoolean(result.GetNullableStruct<sbyte>(2, 0))
+            Token = result.Get<string>(1, null),
+            IsAdmin = Convert.ToBoolean(result.Get<sbyte>(2, 0))
         };
         result.Close();
         return user;

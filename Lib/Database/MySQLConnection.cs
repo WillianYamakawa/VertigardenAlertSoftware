@@ -4,14 +4,9 @@ using DotNetEnv;
 namespace Project.Lib.Database;
 
 public static class MySQLExtensions{
-    public static T GetNullableStruct<T>(this MySqlDataReader reader, int index, T defaultValue = default)where  T : struct{
+    public static T? Get<T>(this MySqlDataReader reader, int index, T? defaultValue = default){
         object result = reader[index];
         return Convert.IsDBNull(result) ? defaultValue : (T)result;
-    }
-
-    public static string? GetString(this MySqlDataReader reader, int index, string? defaultValue = null){
-        object result = reader[index];
-        return Convert.IsDBNull(result) ? defaultValue : (string)result;
     }
 }
 

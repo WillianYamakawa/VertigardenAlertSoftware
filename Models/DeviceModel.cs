@@ -38,7 +38,7 @@ public class Device{
         var result = context.Execute($"SELECT device_id, owner FROM {TableName} WHERE token = '{token}' LIMIT 1");
         if(result == null || !result.Read()) return null;
         int a = (int)result[0];
-        int b = result.GetNullableStruct<int>(1);
+        int b = result.Get<int>(1);
 
         Device data = new() {
             ID = a,

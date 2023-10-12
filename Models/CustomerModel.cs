@@ -3,6 +3,7 @@ using Project.Lib.Database;
 namespace Project.Models;
 
 public class Customer{
+    public const string TableName = "customers";
     public enum DocumentType : byte{
         CPF = 0x0, 
         CNPJ = 0x1

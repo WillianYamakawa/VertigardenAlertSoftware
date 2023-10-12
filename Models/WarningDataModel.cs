@@ -1,4 +1,6 @@
+using System.Text;
 using Project.Lib.Database;
+using Project.Models;
 
 namespace Project.Models;
 
@@ -43,6 +45,73 @@ public class WarningData{
         };
         result.Close();
         return data;
+    }
+
+    public class WarningDataLevelResult{
+        public int Id { get; set; }
+        public int DeviceId { get; set; }
+        public string DeviceToken { get; set; }
+        public int? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerDoc { get; set; }
+        public DateTime CapturedAt { get; set; }
+
+        public WarningDataLevelResult(int id, int deviceId, string deviceToken, int? customerId, string? customerName, string? customerDoc, DateTime capturedAt)
+        {
+            Id = id;
+            DeviceId = deviceId;
+            DeviceToken = deviceToken;
+            CustomerId = customerId;
+            CustomerName = customerName;
+            CustomerDoc = customerDoc;
+            CapturedAt = capturedAt;
+        }
+
+        public WarningDataLevelResult(int id, int deviceId, string deviceToken, DateTime capturedAt)
+        {
+            Id = id;
+            DeviceId = deviceId;
+            DeviceToken = deviceToken;
+            CapturedAt = capturedAt;
+        }
+    }
+
+    public static WarningDataLevelResult[]? GetRecords(int pagingStart, int pagingEnd, string? customer, string? device, DateTime? dateStart, DateTime? dateEnd, IDataBaseContext context){
+        StringBuilder builder = new StringBuilder(512);
+        List<KeyValuePair<string, object?>> values = new List<KeyValuePair<string, object?>>(4);
+
+        builder.Append($"SELECT {TableName}.warning_id, {Models.Device.TableName}.device_id, {Models.Device.TableName}.token, {Models.Customer.TableName}.customer_id,  {Models.Customer.TableName}.name, {Models.Customer.TableName}.doc, {TableName}.captured_at FROM {TableName} INNER JOIN {Models.Device.TableName} ON {TableName}.device = {Models.Device.TableName}.device_id INNER JOIN {Models.Customer.TableName} ON {Models.Customer.TableName}.customer_id = {Models.Device.TableName}.owner WHERE 1=1");
+
+        if(customer != null) { 
+            builder.Append($" AND {Models.Customer.TableName}.doc = @Customer"); 
+            values.Add(new ("@Customer", customer));
+        }
+        if(device != null) { 
+            builder.Append($" AND {Models.Device.TableName}.token = @Device");
+            values.Add(new ("@Device", device));
+        }
+        if(dateStart != null) { 
+            builder.Append($" AND {TableName}.captured_at >= @DateStart");
+            values.Add(new ("@DateStart", dateStart));
+        }
+        if(dateStart != null) { 
+            builder.Append($" AND {TableName}.captured_at <= @DateEnd");
+            values.Add(new ("@DateEnd", dateEnd));
+        }
+
+        builder.Append($" ORDER BY {TableName}.captured_at DESC LIMIT {Math.Max(Math.Max(1, pagingStart), pagingEnd) - Math.Max(1, pagingStart) + 1} OFFSET {Math.Max(0, pagingStart-1)}");
+        Console.WriteLine(builder.ToString());
+
+        MySqlConnector.MySqlDataReader? reader = context.Execute(builder.ToString(), values.ToArray());
+        if(reader == null) return null;
+
+        List<WarningDataLevelResult> result = new List<WarningDataLevelResult>();
+
+        while(reader.Read()){
+            result.Add(new WarningDataLevelResult(reader.Get<int>(0), reader.Get<int>(1), reader.Get<string>(2) ?? string.Empty, reader.Get<int?>(3, null), reader.Get<string>(4, null), reader.Get<string>(5, null), reader.Get<DateTime>(6)));
+        }
+
+        return result.ToArray();
     }
 
     public WarningData() {
