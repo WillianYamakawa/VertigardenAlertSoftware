@@ -12,6 +12,8 @@ public class AuthRequest{
     public string? Login { get; set; }
     public string? Password { get; set; }
     public bool isAdmin { get; set; }
+    public string? Email { get; set; }
+    public bool Notify { get; set; }
 }
 
 [ApiController]
@@ -31,7 +33,7 @@ public class AuthController : ControllerBase{
     public ActionResult PostRegister([FromBody] AuthRequest body)
     {
         if(string.IsNullOrWhiteSpace(body.Login) || string.IsNullOrWhiteSpace(body.Password)) return BadRequest("Login and Password must not be empty");
-        User user = new User(body.Login, Hasher.CalculateSHA256Hash(body.Password), isAdmin: body.isAdmin);
+        User user = new User(body.Login, Hasher.CalculateSHA256Hash(body.Password), isAdmin: body.isAdmin, email: body.Email, notify: body.Notify);
         return user.Save(_context) ? Ok() : StatusCode(StatusCodes.Status500InternalServerError);
     }
 
