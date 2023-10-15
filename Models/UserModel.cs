@@ -22,9 +22,9 @@ public class User{
             Login = (string)result[1],
             Password = (string)result[2],
             Token = token,
-            IsAdmin = (int)result[3] == 0 ? false : true,
+            IsAdmin = Convert.ToBoolean(result.Get<sbyte>(3, 0)),
             Email = result.Get<string>(4, null),
-            Notify = result.Get<int>(5) == 1 ? true : false
+            Notify = Convert.ToBoolean(result.Get<sbyte>(5))
         };
         result.Close();
         return user;
@@ -40,8 +40,8 @@ public class User{
             Password = password,
             Token = result.Get<string>(1, null),
             IsAdmin = Convert.ToBoolean(result.Get<sbyte>(2, 0)),
-            Email = result.Get<string>(4, null),
-            Notify = result.Get<int>(5) == 1 ? true : false
+            Email = result.Get<string>(3, null),
+            Notify = Convert.ToBoolean(result.Get<sbyte>(4))
         };
         result.Close();
         return user;
@@ -65,7 +65,7 @@ public class User{
         if(string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(Password)) return false;
         string query;
         if(ID == 0){
-            query = $"INSERT INTO {TableName} (login, password, token, is_admin) VALUES (@Login, @Password, @Token, @IsAdmin, @Email, @Notify)";
+            query = $"INSERT INTO {TableName} (login, password, token, is_admin, email, notify) VALUES (@Login, @Password, @Token, @IsAdmin, @Email, @Notify)";
         }else{
             query = $"UPDATE {TableName} SET login = @Login, password = @Password, token =  @Token, is_admin = @IsAdmin, email = @Email, notify = @Notify WHERE user_id = {ID}";
         }
