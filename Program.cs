@@ -11,7 +11,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IDataBaseContext, MySQLContext>();
 
+builder.Services.AddCors();
+
 var app = builder.Build();
+
+app.UseCors(builder => {
+    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+});
 
 if (app.Environment.IsDevelopment())
 {

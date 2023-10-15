@@ -111,6 +111,8 @@ public class WarningData{
             result.Add(new WarningDataLevelResult(reader.Get<int>(0), reader.Get<int>(1), reader.Get<string>(2) ?? string.Empty, reader.Get<int?>(3, null), reader.Get<string>(4, null), reader.Get<string>(5, null), reader.Get<DateTime>(6)));
         }
 
+        reader.Close();
+
         return result.ToArray();
     }
 

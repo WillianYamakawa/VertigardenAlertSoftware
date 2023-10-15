@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Project.Lib.Database;
+using DotNetEnv;
 using Project.Models;
 
 namespace Project.Controllers;
@@ -29,7 +30,7 @@ public class WaterLevelController : ControllerBase{
     }
 
     [HttpPost]
-    public ActionResult Post([FromQuery] string token){
+    public async Task<ActionResult> Post([FromQuery] string token){
         if(string.IsNullOrWhiteSpace(token)) return BadRequest("Empty token");
         Device? device = Device.GetByToken(token, _dbContext);
         if(device == null) return BadRequest("Invalid token");
@@ -37,6 +38,31 @@ public class WaterLevelController : ControllerBase{
             CapturedAt = DateTime.Now,
             DeviceID = device.ID
         };
+        await Task.Run(() => {
+            string server = Env.GetString("SMTP_SERVER", null);
+            int port = Env.GetInt("SMTP_PORT", 0);
+            string user = Env.GetString("SMTP_USER", null);
+            string password = Env.GetString("SMTP_PASSWORD", null);
+            if(string.IsNullOrWhiteSpace(server) || string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(password) || port == 0) {
+                _logger.LogError("SMTP settings are invalid (Could not send Email)");
+                return;
+            }
+            SMTPSender sender = new SMTPSender(server, port, user, password);
+            string[]? emails = Models.User.GetAllActiveEmails(_dbContext);
+            if(emails == null){
+                _logger.LogError("Could not fetch emails from database");
+                return;
+            }
+            foreach(string email in emails){
+                try{
+                    Customer? customer = device.GetOwner(_dbContext);
+                    string notDefined = "{NÃO DEFINIDO}";
+                    sender.SendEmail(email, $"ALERTA DE NIVEL - {customer?.Name ?? notDefined}", $"Houve um registro de alerta de nível para {customer?.Name ?? notDefined} ({customer?.Document ?? notDefined} as {data.CapturedAt})", user, false);
+                }catch(Exception e){
+                    _logger.LogError($"Error in SMTP sending ({email}): {e.Message}");
+                }
+            }
+        });
         if(!data.Save(_dbContext)) return StatusCode(StatusCodes.Status500InternalServerError);
         return Ok(device.Token);
     }

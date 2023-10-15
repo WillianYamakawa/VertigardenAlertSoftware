@@ -1,5 +1,6 @@
 using MySqlConnector;
 using DotNetEnv;
+using System.Data;
 
 namespace Project.Lib.Database;
 
@@ -13,8 +14,7 @@ public static class MySQLExtensions{
 public interface IDataBaseContext{
     bool ExecuteNonQuery(string query, params KeyValuePair<string, object?>[] parameters);
     MySqlDataReader? Execute(string query, params KeyValuePair<string, object?>[] parameters);
-
-    ulong GetLastInsertedId();
+    int GetLastInsertedId();
 }
 
 public class MySQLContext : IDataBaseContext, IDisposable{
@@ -59,11 +59,11 @@ public class MySQLContext : IDataBaseContext, IDisposable{
         return true;
     }
 
-    public ulong GetLastInsertedId()
+    public int GetLastInsertedId()
     {
         var result = Execute("SELECT LAST_INSERT_ID() as id");
         if(result == null) return 0;
         result.Read();
-        return result.GetUInt64("id");
+        return result.GetInt32("id");
     }
 }

@@ -1,12 +1,10 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 using DotNetEnv;
 using Microsoft.AspNetCore.Mvc;
 using Project.Lib.Database;
 using Project.Models;
 using Project.Lib.Security;
-using Microsoft.IdentityModel.Tokens;
+
 
 namespace Project.Controllers;
 
