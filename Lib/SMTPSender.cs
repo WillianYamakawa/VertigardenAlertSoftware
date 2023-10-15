@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Mail;
 
+namespace Project.Lib;
 public class SMTPSender
 {
     private string smtpServer;

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Project.Lib.Database;
 using DotNetEnv;
 using Project.Models;
+using Project.Lib;
+using Project.Lib.Web;
 
 namespace Project.Controllers;
 
@@ -64,13 +66,13 @@ public class WaterLevelController : ControllerBase{
             }
         });
         if(!data.Save(_dbContext)) return StatusCode(StatusCodes.Status500InternalServerError);
-        return Ok(device.Token);
+        return Ok();
     }
 
     [HttpGet]
     public ActionResult Get([FromQuery] QueryFilters filter){
         WarningData.WarningDataLevelResult[]? records = WarningData.GetRecords(filter.PagingStart ?? 0, filter.PagingEnd ?? 50, filter.Customer, filter.Device, filter.DateStart, filter.DateEnd, _dbContext);
-        if(records == null) return StatusCode(StatusCodes.Status500InternalServerError);
-        return Ok(records);
+        if(records == null) return StatusCode(StatusCodes.Status500InternalServerError, ResultObject.Build("Erro interno"));
+        return Ok(ResultObject.Build(records));
     }
 }
