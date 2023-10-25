@@ -14,9 +14,8 @@ public class User{
     public bool Notify { get; set; }
 
     public static User? GetByToken(string token, IDataBaseContext context) {
-        var result = context.Execute($"SELECT user_id, login, password, is_admin, email, notify FROM {TableName} WHERE token = {token} LIMIT 1");
-        if(result == null) return null;
-        result.Read();
+        var result = context.Execute($"SELECT user_id, login, password, is_admin, email, notify FROM {TableName} WHERE token = @Token LIMIT 1", new KeyValuePair<string, object?>("@Token", token));
+        if(result == null || !result.Read()) return null;
         User user = new User(){
             ID = (int)result[0],
             Login = (string)result[1],
@@ -33,7 +32,6 @@ public class User{
     public static User? Validate(string login, string password, IDataBaseContext context) {
         var result = context.Execute($"SELECT user_id, token, is_admin, email, notify FROM {TableName} WHERE login = @Login AND password = @Password LIMIT 1", new KeyValuePair<string, object?>("@Login", login), new KeyValuePair<string, object?>("@Password", password));
         if(result == null || !result.Read()) return null;
-
         User user = new User(){
             ID = (int)result[0],
             Login = login,

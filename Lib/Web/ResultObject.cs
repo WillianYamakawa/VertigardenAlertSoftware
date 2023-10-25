@@ -5,7 +5,6 @@ public class ResultObject{
     public object? Payload { get; set; }
     public bool Unauthorized { get; set; }
     public bool Unauthenticated { get; set; }
-    public string? Redirect { get; set; }
 
     public static ResultObject BuildErrors(params object[] errors){
         ResultObject result = new ResultObject();
@@ -13,7 +12,11 @@ public class ResultObject{
         return result;
     }
 
-    public static ResultObject Build(object? payload = null, bool unauthorized = false, bool unauthenticated = false, string? redirect = null) => new ResultObject() { Payload = payload, Unauthorized = unauthorized, Unauthenticated = unauthenticated, Redirect = redirect};
+    public static ResultObject Build(object? payload = null, bool unauthorized = false, bool unauthenticated = false) => new ResultObject() { Payload = payload, Unauthorized = unauthorized, Unauthenticated = unauthenticated};
+
+    public static ResultObject BuildUnauthenticated() => new ResultObject() { Unauthenticated = true };
+
+    public static ResultObject BuildUnauthorized() => new ResultObject() { Unauthorized = true };
 
     public ResultObject() => this.Errors = new List<object>();
 }

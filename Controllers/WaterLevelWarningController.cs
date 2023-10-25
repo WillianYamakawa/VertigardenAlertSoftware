@@ -9,15 +9,14 @@ using Project.Lib.Web;
 
 namespace Project.Controllers;
 
-public class QueryFilters{
+public class QueryFiltersWLC{
     public int? PagingStart { get; set; }
     public int? PagingEnd   { get; set; }
-    public string? Customer { get; set; }
+    public int? Customer { get; set; }
     public string? Device   { get; set; }
     public DateTime? DateStart   { get; set; }
     public DateTime? DateEnd     { get; set; }
 }
-//Ex: /api/wlc?PagingStart=1&PagingEnd=50&Customer={Documento do cliente}
 
 [ApiController]
 [Route("api/wlc")]
@@ -70,7 +69,9 @@ public class WaterLevelController : ControllerBase{
     }
 
     [HttpGet]
-    public ActionResult Get([FromQuery] QueryFilters filter){
+    public ActionResult Get([FromQuery] QueryFiltersWLC filter){
+        Models.User? user = AuthGetter.Get(Request, _dbContext);
+        if(user == null) return BadRequest(ResultObject.BuildUnauthenticated());
         WarningData.WarningDataLevelResult[]? records = WarningData.GetRecords(filter.PagingStart ?? 0, filter.PagingEnd ?? 50, filter.Customer, filter.Device, filter.DateStart, filter.DateEnd, _dbContext);
         if(records == null) return StatusCode(StatusCodes.Status500InternalServerError, ResultObject.Build("Erro interno"));
         return Ok(ResultObject.Build(records));
