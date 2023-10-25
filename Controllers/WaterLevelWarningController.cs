@@ -72,7 +72,7 @@ public class WaterLevelController : ControllerBase{
     public ActionResult Get([FromQuery] QueryFiltersWLC filter){
         Models.User? user = AuthGetter.Get(Request, _dbContext);
         if(user == null) return BadRequest(ResultObject.BuildUnauthenticated());
-        WarningData.WarningDataLevelResult[]? records = WarningData.GetRecords(filter.PagingStart ?? 0, filter.PagingEnd ?? 50, filter.Customer, filter.Device, filter.DateStart, filter.DateEnd, _dbContext);
+        WarningData.Result[]? records = WarningData.GetRecords(filter.PagingStart ?? 0, filter.PagingEnd ?? 50, filter.Customer, filter.Device, filter.DateStart, filter.DateEnd, _dbContext);
         if(records == null) return StatusCode(StatusCodes.Status500InternalServerError, ResultObject.Build("Erro interno"));
         return Ok(ResultObject.Build(records));
     }

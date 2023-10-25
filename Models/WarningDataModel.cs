@@ -47,7 +47,7 @@ public class WarningData{
         return data;
     }
 
-    public class WarningDataLevelResult{
+    public class Result{
         public int Id { get; set; }
         public int DeviceId { get; set; }
         public string DeviceToken { get; set; }
@@ -56,7 +56,7 @@ public class WarningData{
         public string? CustomerDoc { get; set; }
         public DateTime CapturedAt { get; set; }
 
-        public WarningDataLevelResult(int id, int deviceId, string deviceToken, int? customerId, string? customerName, string? customerDoc, DateTime capturedAt)
+        public Result(int id, int deviceId, string deviceToken, int? customerId, string? customerName, string? customerDoc, DateTime capturedAt)
         {
             Id = id;
             DeviceId = deviceId;
@@ -67,7 +67,7 @@ public class WarningData{
             CapturedAt = capturedAt;
         }
 
-        public WarningDataLevelResult(int id, int deviceId, string deviceToken, DateTime capturedAt)
+        public Result(int id, int deviceId, string deviceToken, DateTime capturedAt)
         {
             Id = id;
             DeviceId = deviceId;
@@ -76,7 +76,7 @@ public class WarningData{
         }
     }
 
-    public static WarningDataLevelResult[]? GetRecords(int pagingStart, int pagingEnd, int? customerId, string? device, DateTime? dateStart, DateTime? dateEnd, IDataBaseContext context){
+    public static Result[]? GetRecords(int pagingStart, int pagingEnd, int? customerId, string? device, DateTime? dateStart, DateTime? dateEnd, IDataBaseContext context){
         StringBuilder builder = new StringBuilder(512);
         List<KeyValuePair<string, object?>> values = new List<KeyValuePair<string, object?>>(4);
 
@@ -104,10 +104,10 @@ public class WarningData{
         MySqlConnector.MySqlDataReader? reader = context.Execute(builder.ToString(), values.ToArray());
         if(reader == null) return null;
 
-        List<WarningDataLevelResult> result = new List<WarningDataLevelResult>();
+        List<Result> result = new List<Result>();
 
         while(reader.Read()){
-            result.Add(new WarningDataLevelResult(reader.Get<int>(0), reader.Get<int>(1), reader.Get<string>(2) ?? string.Empty, reader.Get<int?>(3, null), reader.Get<string>(4, null), reader.Get<string>(5, null), reader.Get<DateTime>(6)));
+            result.Add(new Result(reader.Get<int>(0), reader.Get<int>(1), reader.Get<string>(2) ?? string.Empty, reader.Get<int?>(3, null), reader.Get<string>(4, null), reader.Get<string>(5, null), reader.Get<DateTime>(6)));
         }
 
         reader.Close();
