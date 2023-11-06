@@ -43,7 +43,7 @@ public class CustomerController : ControllerBase{
 
     [HttpGet]
     public ActionResult Get([FromQuery] int id){
-        if(AuthGetter.Get(Request, _dbContext) == null) return BadRequest(ResultObject.BuildUnauthenticated());
+        //if(AuthGetter.Get(Request, _dbContext) == null) return BadRequest(ResultObject.BuildUnauthenticated());
         Customer? record = Customer.GetByID(id, _dbContext);
         if(record == null) return BadRequest(ResultObject.Build("Cliente inexistente!"));
         return Ok(ResultObject.Build(record));
@@ -51,8 +51,8 @@ public class CustomerController : ControllerBase{
 
     [HttpGet("all")]
     public ActionResult List([FromQuery] QueryFiltersCustomers filter){
-        if(AuthGetter.Get(Request, _dbContext) == null) return BadRequest(ResultObject.BuildUnauthenticated());
-        Customer.Result[]? records = Customer.GetRecords(filter.PagingStart ?? 0, filter.PagingEnd ?? 50, filter.Name, filter.Doc, _dbContext);
+        //if(AuthGetter.Get(Request, _dbContext) == null) return BadRequest(ResultObject.BuildUnauthenticated());
+        Customer[]? records = Customer.GetRecords(filter.PagingStart ?? 0, filter.PagingEnd ?? 50, filter.Name, filter.Doc, _dbContext);
         if(records == null) return StatusCode(StatusCodes.Status500InternalServerError, ResultObject.Build("Erro interno"));
         return Ok(ResultObject.Build(records));
     }
