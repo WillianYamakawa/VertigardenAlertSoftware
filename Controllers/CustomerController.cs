@@ -52,7 +52,7 @@ public class CustomerController : ControllerBase{
     [HttpGet("all")]
     public ActionResult List([FromQuery] QueryFiltersCustomers filter){
         if(AuthGetter.Get(Request, _dbContext) == null) return BadRequest(ResultObject.BuildUnauthenticated());
-        Customer.Result[]? records = Customer.GetRecords(filter.PagingStart ?? 0, filter.PagingEnd ?? 50, filter.Name, filter.Doc, _dbContext);
+        Customer[]? records = Customer.GetRecords(filter.PagingStart ?? 0, filter.PagingEnd ?? 50, filter.Name, filter.Doc, _dbContext);
         if(records == null) return StatusCode(StatusCodes.Status500InternalServerError, ResultObject.Build("Erro interno"));
         return Ok(ResultObject.Build(records));
     }
