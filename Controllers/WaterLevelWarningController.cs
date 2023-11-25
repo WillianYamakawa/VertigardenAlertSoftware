@@ -32,9 +32,9 @@ public class WaterLevelController : ControllerBase{
 
     [HttpPost]
     public async Task<ActionResult> Post([FromQuery] string token){
-        if(string.IsNullOrWhiteSpace(token)) return BadRequest("Empty token");
+        if(string.IsNullOrWhiteSpace(token)) return BadRequest(ResultObject.BuildErrors("Empty token"));
         Device? device = Device.GetByToken(token, _dbContext);
-        if(device == null) return BadRequest("Invalid token");
+        if(device == null) return BadRequest(ResultObject.BuildErrors("Invalid token"));
         WarningData data = new WarningData(){
             CapturedAt = DateTime.Now,
             DeviceID = device.ID
@@ -73,7 +73,7 @@ public class WaterLevelController : ControllerBase{
         Models.User? user = AuthGetter.Get(Request, _dbContext);
         if(user == null) return BadRequest(ResultObject.BuildUnauthenticated());
         WarningData.Result[]? records = WarningData.GetRecords(filter.PagingStart ?? 0, filter.PagingEnd ?? 50, filter.Customer, filter.Device, filter.DateStart, filter.DateEnd, _dbContext);
-        if(records == null) return StatusCode(StatusCodes.Status500InternalServerError, ResultObject.Build("Erro interno"));
+        if(records == null) return StatusCode(StatusCodes.Status500InternalServerError, ResultObject.BuildErrors("Erro interno"));
         return Ok(ResultObject.Build(records));
     }
 }

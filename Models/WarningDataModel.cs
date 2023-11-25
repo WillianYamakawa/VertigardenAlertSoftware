@@ -80,7 +80,7 @@ public class WarningData{
         StringBuilder builder = new StringBuilder(512);
         List<KeyValuePair<string, object?>> values = new List<KeyValuePair<string, object?>>(4);
 
-        builder.Append($"SELECT {TableName}.warning_id, {Models.Device.TableName}.device_id, {Models.Device.TableName}.token, {Models.Customer.TableName}.customer_id,  {Models.Customer.TableName}.name, {Models.Customer.TableName}.doc, {TableName}.captured_at FROM {TableName} INNER JOIN {Models.Device.TableName} ON {TableName}.device = {Models.Device.TableName}.device_id INNER JOIN {Models.Customer.TableName} ON {Models.Customer.TableName}.customer_id = {Models.Device.TableName}.owner WHERE 1=1");
+        builder.Append($"SELECT {TableName}.warning_id, {Models.Device.TableName}.device_id, {Models.Device.TableName}.token, {Models.Customer.TableName}.customer_id,  {Models.Customer.TableName}.name, {Models.Customer.TableName}.doc, {TableName}.captured_at FROM {TableName} INNER JOIN {Models.Device.TableName} ON {TableName}.device = {Models.Device.TableName}.device_id LEFT JOIN {Models.Customer.TableName} ON {Models.Customer.TableName}.customer_id = {Models.Device.TableName}.owner WHERE 1=1");
 
         if(customerId != null) { 
             builder.Append($" AND {Models.Customer.TableName}.customer_id = @Customer"); 

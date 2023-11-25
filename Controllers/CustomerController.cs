@@ -36,6 +36,7 @@ public class CustomerController : ControllerBase{
 
     [HttpPost]
     public ActionResult Post([FromBody] CustomerRequest payload){
+        //if(AuthGetter.Get(Request, _dbContext) == null) return BadRequest(ResultObject.BuildUnauthenticated());
         if(string.IsNullOrWhiteSpace(payload.Name) || payload.DocType == null || string.IsNullOrWhiteSpace(payload.Doc)) return BadRequest("Campos inválidos!");
         Customer customer = new Customer(payload.Name, payload.DocType ?? Customer.DocumentType.CNPJ, Customer.SanitizeDoc(payload.Doc));
         return customer.Save(_dbContext) ? Ok(ResultObject.Build("Cliente criado com sucesso!")) : StatusCode(StatusCodes.Status500InternalServerError, ResultObject.BuildErrors("Erro interno"));
@@ -43,17 +44,17 @@ public class CustomerController : ControllerBase{
 
     [HttpGet]
     public ActionResult Get([FromQuery] int id){
-        if(AuthGetter.Get(Request, _dbContext) == null) return BadRequest(ResultObject.BuildUnauthenticated());
+        //if(AuthGetter.Get(Request, _dbContext) == null) return BadRequest(ResultObject.BuildUnauthenticated());
         Customer? record = Customer.GetByID(id, _dbContext);
-        if(record == null) return BadRequest(ResultObject.Build("Cliente inexistente!"));
+        if(record == null) return BadRequest(ResultObject.BuildErrors("Cliente inexistente!"));
         return Ok(ResultObject.Build(record));
     }
 
     [HttpGet("all")]
     public ActionResult List([FromQuery] QueryFiltersCustomers filter){
-        if(AuthGetter.Get(Request, _dbContext) == null) return BadRequest(ResultObject.BuildUnauthenticated());
+        //if(AuthGetter.Get(Request, _dbContext) == null) return BadRequest(ResultObject.BuildUnauthenticated());
         Customer[]? records = Customer.GetRecords(filter.PagingStart ?? 0, filter.PagingEnd ?? 50, filter.Name, filter.Doc, _dbContext);
-        if(records == null) return StatusCode(StatusCodes.Status500InternalServerError, ResultObject.Build("Erro interno"));
+        if(records == null) return StatusCode(StatusCodes.Status500InternalServerError, ResultObject.BuildErrors("Erro interno"));
         return Ok(ResultObject.Build(records));
     }
 }
