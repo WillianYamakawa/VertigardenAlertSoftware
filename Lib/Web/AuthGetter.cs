@@ -5,7 +5,7 @@ namespace Project.Lib.Web;
 
 public class AuthGetter{
     public static User? Get(HttpRequest request, IDataBaseContext context){
-        string? value = request.Headers["Authentication"];
+        string? value = request.Headers["Authorization"];
         if(value == null) return null;
         if(!value.StartsWith("Basic ")) return null;
         string token = value.Substring(6, value.Length - 6);
